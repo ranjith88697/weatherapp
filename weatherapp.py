@@ -123,6 +123,20 @@ def display_weather(data: dict, city_name: str = ""):
 
     st.caption("Data source: Google Weather API")
 
+# Fetch 5-day forecast
+def get_forecast(lat, lon, weather_api):
+    # Assuming the Google Weather API has a forecast endpoint.
+    # This URL might need adjustment based on the actual API documentation.
+    forecast_url = "https://weather.googleapis.com/v1/forecast:lookup"  # Example forecast endpoint
+    forecast_params = {
+        "key": weather_api,
+        "location.latitude": lat,
+        "location.longitude": lon,
+        "days": 5 # Assuming a parameter for number of days
+    }
+    forecast_response = requests.get(forecast_url, params=forecast_params, timeout=10)
+    forecast_response.raise_for_status() # Raise an HTTPError for bad responses (4xx or 5xx)
+    return forecast_response.json()
 
 # --- UI Inputs ---
 city_name = st.text_input("Enter your city:", "Riga")
@@ -158,6 +172,18 @@ if st.button("Get Weather"):
 
         # Display parsed data
         display_weather(data, city_name=city_name)
+        if forecast.get("list"):
+            st.subheader(f"📅 5-Day Forecast for {city_name}")
+            # Assuming each entry in "list" is a forecast for a specific time
+            # and you want to display every 8th entry for daily forecast
+            for entry in forecast["list"][::8]:
+                # Assuming 'dt' is a timestamp and 'main' and 'weather' keys exist
+                dt = datetime.fromtimestamp(entry["dt"]).strftime("%A %H:%M")
+                temp = entry["main"]["temp"]
+                desc = entry["weather"][0]["description"].title()
+                st.write(f"{dt}: {temp}°C, {desc}")
+        else:
+            st.warning(f"Could not retrieve 5-day forecast for {city_name}.")
 
     except requests.HTTPError as he:
         st.error(f"HTTP error: {he}")
