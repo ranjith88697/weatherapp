@@ -8,10 +8,11 @@ api_key = st.secrets["GOOGLE_API_KEY"]
 weather_api = st.secrets["G_WEATHER_API"]
 city_name = st.text_input("Enter your city:", "Riga" )
 address = city_name
-url = f"https://maps.googleapis.com/maps/api/geocode/json?address={address}&key={api_key}"
-
-response = requests.get(url)
-location = response.json()['results'][0]['geometry']['location']
+#url = f"https://maps.googleapis.com/maps/api/geocode/json?address={address}&key={api_key}"
+url = "https://maps.googleapis.com/maps/api/geocode/json"
+geo_param = {"address" : adddress, "key" : api_key}
+geo_response = requests.get(url, params=geo_param)
+location = geo_response.json()['results'][0]['geometry']['location']
 Latitude =  float(location['lat'])
 Longitude =  float(location['lng'])
 print(round(Latitude,2))
