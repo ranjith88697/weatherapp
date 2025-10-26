@@ -1,5 +1,8 @@
 import streamlit as st
 import requests
+from datetime import datetime
+import pytz
+import json
 
 st.title("🌦 Weather App with Google APIs")
 
@@ -68,3 +71,111 @@ if st.button("Get Weather"):
     except Exception as e:
         st.error("Unable to parse weather data — see raw response below:")
         st.json(data)
+def safe(d, *keys, default=None):
+    """Safe nested dict getter: safe(data, 'a','b') -> data['a']['b'] or default"""
+    for k in keys:
+        if not isinstance(d, dict) or k not in d:
+            return default
+        d = d[k]
+    return d
+
+def display_weather(data, city_name="city_name"):
+    # Basic fields
+    current_time = safe(data, "currentTime")
+    timezone_id = safe(data, "timeZone", "id", default="UTC")
+    is_day = safe(data, "isDaytime", default=None)
+
+    cond_text = safe(data, "weatherCondition", "description", "text", default="N/A")
+    icon_base = safe(data, "weatherCondition", "iconBaseUri", default=None)
+    condition_type = safe(data, "weatherCondition", "type", default=None)
+
+    temp = safe(data, "temperature", "degrees", default="N/A")
+    temp_unit = safe(data, "temperature", "unit", default="CELSIUS")
+
+    feels_like = safe(data, "feelsLikeTemperature", "degrees", default="N/A")
+    humidity = safe(data, "relativeHumidity", default="N/A")
+    dew_point = safe(data, "dewPoint", "degrees", default="N/A")
+    wind_speed = safe(data, "wind", "speed", "value", default="N/A")
+    wind_unit = safe(data, "wind", "speed", "unit", default=None)
+    wind_dir = safe(data, "wind", "direction", "cardinal", default="N/A")
+    wind_gust = safe(data, "wind", "gust", "value", default=None)
+    visibility = safe(data, "visibility", "distance", default="N/A")
+    visibility_unit = safe(data, "visibility", "unit", default=None)
+    pressure = safe(data, "airPressure", "meanSeaLevelMillibars", default="N/A")
+    uv = safe(data, "uvIndex", default="N/A")
+    precip_prob = safe(data, "precipitation", "probability", "percent", default="N/A")
+    precip_qpf = safe(data, "precipitation", "qpf", "quantity", default="N/A")
+    precip_unit = safe(data, "precipitation", "qpf", "unit", default=None)
+    cloud_cover = safe(data, "cloudCover", default="N/A")
+
+    # History / min/max
+    temp_min = safe(data, "currentConditionsHistory", "minTemperature", "degrees", default=None)
+    temp_max = safe(data, "currentConditionsHistory", "maxTemperature", "degrees", default=None)
+    qpf_history = safe(data, "currentConditionsHistory", "qpf", "quantity", default=None)
+
+    # Title / header
+    st.subheader(f"🌍 Current Weather{(' — ' + city_name) if city_name else ''}")
+
+    # time with timezone (if pytz available)
+    if current_time:
+        try:
+            dt = datetime.fromisoformat(current_time.replace("Z", "+00:00"))
+            try:
+                tz = pytz.timezone(timezone_id)
+                dt_local = dt.astimezone(tz)
+                st.caption(f"Updated: {dt_local.strftime('%Y-%m-%d %H:%M:%S %Z')}")
+            except Exception:
+                st.caption(f"Updated (UTC): {dt.strftime('%Y-%m-%d %H:%M:%S UTC')}")
+        except Exception:
+            st.caption(f"Time: {current_time}")
+
+    # Top row: icon + main temperature & condition
+    col_icon, col_main = st.columns([1, 4])
+    with col_icon:
+        if icon_base:
+            # iconBaseUri may be a base path — try to show it (some providers append names)
+            st.image(icon_base, width=72)
+    with col_main:
+        st.markdown(f"### {temp}° {temp_unit.capitalize()}  —  **{cond_text}**")
+        if condition_type:
+            st.write(f"*Condition type:* `{condition_type}`")
+        st.write(f"Feels like: **{feels_like}° {temp_unit.capitalize()}**")
+
+    st.write("---")
+
+    # Key metrics
+    m1, m2, m3 = st.columns(3)
+    m1.metric("💧 Humidity", f"{humidity}%")
+    m2.metric("🌬️ Wind", f"{wind_speed} {wind_unit or ''}", delta=f"{wind_dir}")
+    m3.metric("🔆 UV Index", f"{uv}")
+
+    # Secondary row
+    s1, s2, s3 = st.columns(3)
+    s1.write(f"**Dew point:** {dew_point}° {temp_unit.capitalize()}")
+    s2.write(f"**Pressure (MSL):** {pressure} mb")
+    s3.write(f"**Visibility:** {visibility} {visibility_unit or ''}")
+
+    # Precipitation & cloud
+    st.write(f"**Precipitation probability:** {precip_prob}%")
+    st.write(f"**Precipitation (QPF):** {precip_qpf} {precip_unit or ''}")
+    st.write(f"**Cloud cover:** {cloud_cover}%")
+
+    # Wind gust if exists
+    if wind_gust:
+        st.write(f"**Wind gust:** {wind_gust} {wind_unit or ''}")
+
+    # History / min-max
+    if temp_max is not None or temp_min is not None or qpf_history is not None:
+        st.write("---")
+        st.write("**History / Summary**")
+        if temp_max is not None:
+            st.write(f"- Max temp: {temp_max}° {temp_unit}")
+        if temp_min is not None:
+            st.write(f"- Min temp: {temp_min}° {temp_unit}")
+        if qpf_history is not None:
+            st.write(f"- Total QPF (history): {qpf_history} mm")
+
+    st.caption("Data source: Google Weather API (parsed)")
+
+# Example usage:
+# display_weather(data, city_name="Riga")
