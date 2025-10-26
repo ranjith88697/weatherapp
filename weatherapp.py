@@ -48,7 +48,9 @@ if st.button("Get Weather"):
         st.stop()
 
     data = weather_response.json()
-
+    st.write("DEBUG: raw weather JSON:")
+    st.json(data)
+    display_weather(data, city_name=city_name)
     # ✅ Parse and display key data (depends on Google Weather API structure)
     st.subheader(f"🌍 Current Weather in {city_name.title()}")
 
