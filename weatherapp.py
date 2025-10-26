@@ -11,7 +11,7 @@ weather_api = st.secrets["G_WEATHER_API"]
 city_name = st.text_input("Enter your city:", "Riga")
 
 if st.button("Get Weather"):
-    st.write("Loaded keys:", "GOOGLE_API_KEY" in st.secrets, "G_WEATHER_API" in st.secrets,city_name)
+    st.write("Loaded keys:", "GOOGLE_API_KEY" in st.secrets, "G_WEATHER_API" in st.secrets)
     # ✅ 1️⃣ Get latitude & longitude using Geocoding API
     geo_url = "https://maps.googleapis.com/maps/api/geocode/json"
     geo_params = {"address": city_name, "key": api_key}
