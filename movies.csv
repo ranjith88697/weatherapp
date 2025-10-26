@@ -1,0 +1,10 @@
+title,type,release_year,age_certification,runtime,genres,production_countries,seasons,imdb_id,imdb_score,imdb_votes
+Five Came Back: The Reference Films,SHOW,1945,TV-MA,48,['documentation'],['US'],1.0,,,
+Taxi Driver,MOVIE,1976,R,113,"['crime', 'drama']",['US'],,tt0075314,8.3,795222.0
+Monty Python and the Holy Grail,MOVIE,1975,PG,91,"['comedy', 'fantasy']",['GB'],,tt0071853,8.2,530877.0
+Life of Brian,MOVIE,1979,R,94,['comedy'],['GB'],,tt0079470,8.0,392419.0
+The Exorcist,MOVIE,1973,R,133,['horror'],['US'],,tt0070047,8.1,391942.0
+Monty Python's Flying Circus,SHOW,1969,TV-14,30,"['comedy', 'european']",['GB'],4.0,tt0063929,8.8,72895.0
+Dirty Harry,MOVIE,1971,R,102,"['thriller', 'crime', 'action']",['US'],,tt0066999,7.7,153463.0
+My Fair Lady,MOVIE,1964,G,170,"['drama', 'music', 'romance', 'family']",['US'],,tt0058385,7.8,94121.0
+The Blue Lagoon,MOVIE,1980,R,104,"['romance', 'drama']",['US'],,tt0080453,5.8,69053.0
