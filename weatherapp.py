@@ -4,8 +4,10 @@ import requests
 st.title("🌦 Weather App with Google APIs")
 
 # ✅ Make sure these secrets exist in .streamlit/secrets.toml
-api_key = st.secrets["GOOGLE_API_KEY"]
-weather_api = st.secrets["G_WEATHER_API"]
+#api_key = st.secrets["GOOGLE_API_KEY"]
+#weather_api = st.secrets["G_WEATHER_API"]
+api_key = "AIzaSyAX3v9OSj4Fg3Ad649BIRR13B09CidYNqc"
+weather_api = "AIzaSyBF5T-bQzl9-NFJ_aHMzTgTntqC-TjMIw4"
 
 # ✅ Input for user
 city_name = st.text_input("Enter your city:", "Riga")
