@@ -1,4 +1,5 @@
 import streamlit as st
+import requests
 #from google.colab import userdata
 #Get Lat and Lng based on city, country
 #api_key = userdata.get('GOOGLE_API_KEY') # Get the API key from userdata
