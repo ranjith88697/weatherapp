@@ -6,19 +6,18 @@ import json
 
 st.title("🌦 Weather App with Google APIs")
 
-# ✅ Make sure these secrets exist in .streamlit/secrets.toml
 #api_key = st.secrets["GOOGLE_API_KEY"]
 #weather_api = st.secrets["G_WEATHER_API"]
 api_key = "AIzaSyAX3v9OSj4Fg3Ad649BIRR13B09CidYNqc"
 weather_api = "AIzaSyBF5T-bQzl9-NFJ_aHMzTgTntqC-TjMIw4"
 
-# ✅ Input for user
+#Input for user
 city_name = st.text_input("Enter your city:", "Riga")
 
 if st.button("Get Weather"):
     st.info(f"Fetching weather data for **{city_name}**...")
 
-    # 🌍 Step 1: Get coordinates using Google Geocoding API
+    #Step 1: Get coordinates using Google Geocoding API
     geo_url = "https://maps.googleapis.com/maps/api/geocode/json"
     geo_params = {"address": city_name, "key": api_key}
     geo_response = requests.get(geo_url, params=geo_params)
@@ -33,7 +32,7 @@ if st.button("Get Weather"):
     lat, lon = location["lat"], location["lng"]
     st.write(f"📍 **Latitude:** {lat}, **Longitude:** {lon}")
 
-    # 🌤 Step 2: Fetch weather data from Google Weather API
+    #Step 2: Fetch weather data from Google Weather API
     weather_url = "https://weather.googleapis.com/v1/currentConditions:lookup"
     weather_params = {
         "key": weather_api,
@@ -48,9 +47,9 @@ if st.button("Get Weather"):
         st.stop()
 
     data = weather_response.json()
-    st.write("DEBUG: raw weather JSON:")
-    st.json(data)
-    # ✅ Parse and display key data (depends on Google Weather API structure)
+    #st.write("DEBUG: raw weather JSON:") -- for Debugging
+    #st.json(data) -- for Debugging
+    #Parse and display key data (depends on Google Weather API structure)
     st.subheader(f"🌍 Current Weather in {city_name.title()}")
 
 def safe(d, *keys, default=None):
@@ -94,9 +93,6 @@ def display_weather(data, city_name="city_name"):
     temp_min = safe(data, "currentConditionsHistory", "minTemperature", "degrees", default=None)
     temp_max = safe(data, "currentConditionsHistory", "maxTemperature", "degrees", default=None)
     qpf_history = safe(data, "currentConditionsHistory", "qpf", "quantity", default=None)
-
-    # Title / header
-    st.subheader(f"🌍 Current Weather{(' — ' + city_name) if city_name else ''}")
 
     # time with timezone (if pytz available)
     if current_time:
