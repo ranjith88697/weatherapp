@@ -2,10 +2,9 @@ import streamlit as st
 #from google.colab import userdata
 #Get Lat and Lng based on city, country
 #api_key = userdata.get('GOOGLE_API_KEY') # Get the API key from userdata
-#api_key = st.secrets("GOOGLE_API_KEY")
-api_key = "AIzaSyAX3v9OSj4Fg3Ad649BIRR13B09CidYNqc"
+api_key = st.secrets["GOOGLE_API_KEY"]
 #weather_api = userdata.get('G_WEATHER_API')
-weather_api = st.secrets("G_WEATHER_API")
+weather_api = st.secrets["G_WEATHER_API"]
 city_name = input('Enter your city:' )
 address = city_name
 url = f"https://maps.googleapis.com/maps/api/geocode/json?address={address}&key={api_key}"
