@@ -6,7 +6,7 @@ import requests
 api_key = st.secrets["GOOGLE_API_KEY"]
 #weather_api = userdata.get('G_WEATHER_API')
 weather_api = st.secrets["G_WEATHER_API"]
-city_name = st.text_input("Enter your city:", "City Name" )
+city_name = st.text_input("Enter your city:", "Riga" )
 address = city_name
 url = f"https://maps.googleapis.com/maps/api/geocode/json?address={address}&key={api_key}"
 
