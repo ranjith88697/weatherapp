@@ -172,7 +172,8 @@ if st.button("Get Weather"):
 
         # Display parsed data
         display_weather(data, city_name=city_name)
-    if forecast.get("list"):
+        forecast = get_forecast(lat, lon, weather_api)
+        if forecast.get("list"):
             st.subheader(f"📅 5-Day Forecast for {city_name}")
             # Assuming each entry in "list" is a forecast for a specific time
             # and you want to display every 8th entry for daily forecast
@@ -182,7 +183,7 @@ if st.button("Get Weather"):
                 temp = entry["main"]["temp"]
                 desc = entry["weather"][0]["description"].title()
                 st.write(f"{dt}: {temp}°C, {desc}")
-    else:
+        else:
             st.warning(f"Could not retrieve 5-day forecast for {city_name}.")
 
     except requests.HTTPError as he:
