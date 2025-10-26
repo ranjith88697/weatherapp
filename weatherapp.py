@@ -34,7 +34,7 @@ if st.button("Get Weather"):
         weather_response = requests.get(weather_url, params=weather_params)
 
         # ✅ 3️⃣ Display result
-       if weather_response.status_code != 200:
+    if weather_response.status_code != 200:
         st.error(f"Weather API Error: {weather_response.status_code}")
         st.write(weather_response.text)
         st.stop()
@@ -45,7 +45,7 @@ if st.button("Get Weather"):
         st.warning(f"No results found for '{city_name}'. Try another city name.")
         st.write("Full API response:", geo_data)
 
-     st.subheader(f"🌍 Current Weather in {city_name.title()}")
+        st.subheader(f"🌍 Current Weather in {city_name.title()}")
 
     try:
         conditions = data.get("currentConditions", {})
