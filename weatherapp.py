@@ -46,7 +46,7 @@ if st.button("Get Weather"):
         st.write(weather_response.text)
         st.stop()
 
-data = weather_response.json()
+    data = weather_response.json()
     #st.write("DEBUG: raw weather JSON:") -- for Debugging
     #st.json(data) -- for Debugging
     #Parse and display key data (depends on Google Weather API structure)
@@ -154,6 +154,6 @@ def display_weather(data, city_name="city_name"):
             st.write(f"- Total QPF (history): {qpf_history} mm")
 
     st.caption("Data source: Google Weather API (parsed)")
-display_weather(data, city_name=city_name)
+    display_weather(data, city_name=city_name)
 # Example usage:
 # display_weather(data, city_name="Riga")
