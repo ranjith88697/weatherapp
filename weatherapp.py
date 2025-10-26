@@ -46,7 +46,7 @@ if st.button("Get Weather"):
         st.write(weather_response.text)
         st.stop()
 
-    data = weather_response.json()
+data = weather_response.json()
     #st.write("DEBUG: raw weather JSON:") -- for Debugging
     #st.json(data) -- for Debugging
     #Parse and display key data (depends on Google Weather API structure)
@@ -94,7 +94,7 @@ def display_weather(data, city_name="city_name"):
     temp_max = safe(data, "currentConditionsHistory", "maxTemperature", "degrees", default=None)
     qpf_history = safe(data, "currentConditionsHistory", "qpf", "quantity", default=None)
 
-    # time with timezone (if pytz available)
+    # time with timezone 
     if current_time:
         try:
             dt = datetime.fromisoformat(current_time.replace("Z", "+00:00"))
