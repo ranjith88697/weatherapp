@@ -52,25 +52,6 @@ if st.button("Get Weather"):
     # ✅ Parse and display key data (depends on Google Weather API structure)
     st.subheader(f"🌍 Current Weather in {city_name.title()}")
 
-    try:
-        conditions = data.get("currentConditions", {})
-        temp = conditions.get("temperature", {}).get("value", "N/A")
-        humidity = conditions.get("humidity", {}).get("value", "N/A")
-        wind_speed = conditions.get("windSpeed", {}).get("value", "N/A")
-        condition_desc = conditions.get("conditionDescription", "N/A")
-
-        col1, col2, col3 = st.columns(3)
-        col1.metric("🌡️ Temperature", f"{temp}°C")
-        col2.metric("💧 Humidity", f"{humidity}%")
-        col3.metric("🌬️ Wind Speed", f"{wind_speed} m/s")
-
-        st.write(f"**Condition:** {condition_desc}")
-        st.divider()
-        st.caption("📘 Data provided by Google Weather API")
-
-    except Exception as e:
-        st.error("Unable to parse weather data — see raw response below:")
-        st.json(data)
 def safe(d, *keys, default=None):
     """Safe nested dict getter: safe(data, 'a','b') -> data['a']['b'] or default"""
     for k in keys:
