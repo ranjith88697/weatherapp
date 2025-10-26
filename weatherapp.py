@@ -1,3 +1,4 @@
+
 import streamlit as st
 import requests
 from datetime import datetime
@@ -6,11 +7,13 @@ import json
 
 st.title("🌦 Weather App with Google APIs")
 
-#api_key = st.secrets["GOOGLE_API_KEY"]
-#weather_api = st.secrets["G_WEATHER_API"]
+# Replace with your actual API keys or use st.secrets
+# api_key = st.secrets["GOOGLE_API_KEY"]
+# weather_api = st.secrets["G_WEATHER_API"]
 api_key = "AIzaSyAX3v9OSj4Fg3Ad649BIRR13B09CidYNqc"
 weather_api = "AIzaSyBF5T-bQzl9-NFJ_aHMzTgTntqC-TjMIw4"
-#Dev Functions 
+
+# Helper functions
 def safe_get(d, *keys, default=None):
     """Safely traverse nested dicts."""
     for k in keys:
@@ -25,6 +28,7 @@ def format_time(iso_ts: str, tz_id: str | None = None):
         return None
     try:
         dt = datetime.fromisoformat(iso_ts.replace("Z", "+00:00"))
+        # You might want to add timezone conversion here if tz_id is reliable
         return dt.strftime("%Y-%m-%d %H:%M:%S UTC")
     except Exception:
         return iso_ts
@@ -63,6 +67,7 @@ def display_weather(data: dict, city_name: str = ""):
     temp_max = safe_get(data, "currentConditionsHistory", "maxTemperature", "degrees")
     qpf_history = safe_get(data, "currentConditionsHistory", "qpf", "quantity")
 
+
     # Header
     st.subheader(f"🌍 Current Weather{(' — ' + city_name) if city_name else ''}")
     formatted_time = format_time(current_time, timezone_id)
@@ -82,6 +87,7 @@ def display_weather(data: dict, city_name: str = ""):
         st.write(f"Feels like: **{feels_like}° {temp_unit.capitalize()}**")
         if condition_type:
             st.write(f"*Condition type:* `{condition_type}`")
+
 
     st.write("---")
 
@@ -114,7 +120,9 @@ def display_weather(data: dict, city_name: str = ""):
         if qpf_history is not None:
             st.write(f"- Total QPF (history): {qpf_history} {precip_unit or 'mm'}")
 
+
     st.caption("Data source: Google Weather API")
+
 
 # --- UI Inputs ---
 city_name = st.text_input("Enter your city:", "Riga")
