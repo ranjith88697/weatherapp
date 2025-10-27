@@ -123,21 +123,6 @@ def display_weather(data: dict, city_name: str = ""):
 
     st.caption("Data source: Google Weather API")
 
-# Fetch 5-day forecast
-def get_forecast(lat, lon, weather_api):
-    # Assuming the Google Weather API has a forecast endpoint.
-    # This URL might need adjustment based on the actual API documentation.
-    forecast_url = "https://weather.googleapis.com/v1/forecast/days:lookup"  # Example forecast endpoint
-    forecast_params = {
-        "key": weather_api,
-        "location.latitude": lat,
-        "location.longitude": lon,
-        "days": 5 # Assuming a parameter for number of days
-    }
-    forecast_response = requests.get(forecast_url, params=forecast_params, timeout=10)
-    forecast_response.raise_for_status() # Raise an HTTPError for bad responses (4xx or 5xx)
-    return forecast_response.json()
-
 # --- UI Inputs ---
 city_name = st.text_input("Enter your city:", "Riga")
 
@@ -169,6 +154,7 @@ if st.button("Get Weather"):
         weather_response = requests.get(weather_url, params=weather_params, timeout=10)
         weather_response.raise_for_status()
         data = weather_response.json()
+        
         # 3) Forcast weather for 5 days
         forecast_url = "https://weather.googleapis.com/v1/forecast/days:lookup"  # Example forecast endpoint
         forecast_params = {
@@ -183,19 +169,60 @@ if st.button("Get Weather"):
         # Display parsed data
         display_weather(data, city_name=city_name)
         #forecast = get_forecast(lat, lon, weather_api)
-        st.write(forecast)
-        if forecast.get("list"):
-            st.subheader(f"📅 5-Day Forecast for {city_name}")
-            # Assuming each entry in "list" is a forecast for a specific time
-            # and you want to display every 8th entry for daily forecast
-            for entry in forecast["list"][::8]:
-                # Assuming 'dt' is a timestamp and 'main' and 'weather' keys exist
-                dt = datetime.fromtimestamp(entry["dt"]).strftime("%A %H:%M")
-                temp = entry["main"]["temp"]
-                desc = entry["weather"][0]["description"].title()
-                st.write(f"{dt}: {temp}°C, {desc}")
+        #st.write(forecast) -- for Debugging data format
+        if "forecastDays" in forecast:
+            forecast_list = []
+            for day in data["forecastDays"]:
+                date_str = f"{day['displayDate']['year']}-{day['displayDate']['month']:02d}-{day['displayDate']['day']:02d}"
+                date = datetime.strptime(date_str, "%Y-%m-%d").date()
+
+                # Extract key fields
+                daytime = day["daytimeForecast"]
+                nighttime = day["nighttimeForecast"]
+
+                forecast_list.append({
+                    "Date": date,
+                    "Condition (Day)": daytime["weatherCondition"]["description"]["text"],
+                    "Condition (Night)": nighttime["weatherCondition"]["description"]["text"],
+                    "Max Temp (°C)": day["maxTemperature"]["degrees"],
+                    "Min Temp (°C)": day["minTemperature"]["degrees"],
+                    "Feels Like Max (°C)": day["feelsLikeMaxTemperature"]["degrees"],
+                    "Feels Like Min (°C)": day["feelsLikeMinTemperature"]["degrees"],
+                    "Humidity (Day)": daytime.get("relativeHumidity", None),
+                    "Humidity (Night)": nighttime.get("relativeHumidity", None),
+                    "Precip Chance (Day)": daytime["precipitation"]["probability"]["percent"],
+                    "Precip Chance (Night)": nighttime["precipitation"]["probability"]["percent"],
+                    "Wind (Day)": f"{daytime['wind']['speed']['value']} {daytime['wind']['speed']['unit']}",
+                    "Wind (Night)": f"{nighttime['wind']['speed']['value']} {nighttime['wind']['speed']['unit']}",
+                })
+
+            # --- Convert to DataFrame ---
+            df = pd.DataFrame(forecast_list)
+
+            # --- Display nicely ---
+            st.subheader("🌤 3-Day Weather Forecast")
+            st.dataframe(df, use_container_width=True)
+
+            # --- Optional: Show icons ---
+            st.subheader("🌇 Daily Summary")
+            for day, forecast in zip(data["forecastDays"], forecast_list):
+                st.markdown(f"### 📅 {forecast['Date']}")
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    st.image(day["daytimeForecast"]["weatherCondition"]["iconBaseUri"] + ".png", width=64)
+                    st.write("**Day:**", forecast["Condition (Day)"])
+                    st.write("💧", forecast["Humidity (Day)"], "% humidity")
+                    st.write("🌡️", forecast["Max Temp (°C)"], "°C")
+
+                with col2:
+                    st.image(day["nighttimeForecast"]["weatherCondition"]["iconBaseUri"] + ".png", width=64)
+                    st.write("**Night:**", forecast["Condition (Night)"])
+                    st.write("💧", forecast["Humidity (Night)"], "% humidity")
+                    st.write("🌡️", forecast["Min Temp (°C)"], "°C")
+
         else:
-            st.warning(f"Could not retrieve 5-day forecast for {city_name}.")
+            st.warning("No forecast data available in the response.")
 
     except requests.HTTPError as he:
         st.error(f"HTTP error: {he}")
