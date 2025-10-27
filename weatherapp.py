@@ -169,7 +169,7 @@ if st.button("Get Weather"):
         # Display parsed data
         display_weather(data, city_name=city_name)
         #forecast = get_forecast(lat, lon, weather_api)
-        #st.write(forecast) -- for Debugging data format
+        st.write(forecast)
         if "forecastDays" in forecast:
             forecast_list = []
             for day in data["forecastDays"]:
