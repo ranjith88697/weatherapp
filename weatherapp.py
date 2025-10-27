@@ -4,6 +4,7 @@ import requests
 from datetime import datetime
 import pytz
 import json
+import pandas as pd
 
 st.title("🌦 Weather App with Google APIs")
 
@@ -123,56 +124,12 @@ def display_weather(data: dict, city_name: str = ""):
 
     st.caption("Data source: Google Weather API")
 
-# --- UI Inputs ---
-city_name = st.text_input("Enter your city:", "Riga")
-
-if st.button("Get Weather"):
-    try:
-        # 1) Geocode: city -> lat/lon
-        geo_url = "https://maps.googleapis.com/maps/api/geocode/json"
-        geo_params = {"address": city_name, "key": api_key}
-        geo_response = requests.get(geo_url, params=geo_params, timeout=10)
-        geo_response.raise_for_status()
-        geo_data = geo_response.json()
-
-        results = geo_data.get("results")
-        if not results:
-            st.warning(f"No location found for '{city_name}'. Please try another name.")
-            st.stop()
-
-        loc = results[0]["geometry"]["location"]
-        lat, lon = loc["lat"], loc["lng"]
-        st.write(f"📍 Latitude: {lat}, Longitude: {lon}")
-
-        # 2) Weather: lat/lon -> current conditions
-        weather_url = "https://weather.googleapis.com/v1/currentConditions:lookup"
-        weather_params = {
-            "key": weather_api,
-            "location.latitude": lat,
-            "location.longitude": lon
-        }
-        weather_response = requests.get(weather_url, params=weather_params, timeout=10)
-        weather_response.raise_for_status()
-        data = weather_response.json()
-        
-        # 3) Forcast weather for 5 days
-        forecast_url = "https://weather.googleapis.com/v1/forecast/days:lookup"  # Example forecast endpoint
-        forecast_params = {
-            "key": weather_api,
-            "location.latitude": lat,
-            "location.longitude": lon,
-            "days": 5 # Assuming a parameter for number of days
-        }
-        forecast_response = requests.get(forecast_url, params=forecast_params, timeout=10)
-        forecast_response.raise_for_status() # Raise an HTTPError for bad responses (4xx or 5xx)
-        forecast = forecast_response.json()
-        # Display parsed data
-        display_weather(data, city_name=city_name)
-        #forecast = get_forecast(lat, lon, weather_api)
-        st.write(forecast)
-        if "forecastDays" in forecast:
+def display_forecast(forecast: dict, city_name: str = ""):
+    """Parse and display weather data in a clean layout."""
+    # top-level fields
+   if "forecastDays" in forecast:
             forecast_list = []
-            for day in data["forecastDays"]:
+            for day in forecast["forecastDays"]:
                 date_str = f"{day['displayDate']['year']}-{day['displayDate']['month']:02d}-{day['displayDate']['day']:02d}"
                 date = datetime.strptime(date_str, "%Y-%m-%d").date()
 
@@ -223,6 +180,56 @@ if st.button("Get Weather"):
 
         else:
             st.warning("No forecast data available in the response.")
+
+# --- UI Inputs ---
+city_name = st.text_input("Enter your city:", "Riga")
+
+if st.button("Get Weather"):
+    try:
+        # 1) Geocode: city -> lat/lon
+        geo_url = "https://maps.googleapis.com/maps/api/geocode/json"
+        geo_params = {"address": city_name, "key": api_key}
+        geo_response = requests.get(geo_url, params=geo_params, timeout=10)
+        geo_response.raise_for_status()
+        geo_data = geo_response.json()
+
+        results = geo_data.get("results")
+        if not results:
+            st.warning(f"No location found for '{city_name}'. Please try another name.")
+            st.stop()
+
+        loc = results[0]["geometry"]["location"]
+        lat, lon = loc["lat"], loc["lng"]
+        st.write(f"📍 Latitude: {lat}, Longitude: {lon}")
+
+        # 2) Weather: lat/lon -> current conditions
+        weather_url = "https://weather.googleapis.com/v1/currentConditions:lookup"
+        weather_params = {
+            "key": weather_api,
+            "location.latitude": lat,
+            "location.longitude": lon
+        }
+        weather_response = requests.get(weather_url, params=weather_params, timeout=10)
+        weather_response.raise_for_status()
+        data = weather_response.json()
+        
+        # 3) Forcast weather for 5 days
+        forecast_url = "https://weather.googleapis.com/v1/forecast/days:lookup"  # Example forecast endpoint
+        forecast_params = {
+            "key": weather_api,
+            "location.latitude": lat,
+            "location.longitude": lon,
+            "days": 5 # Assuming a parameter for number of days
+        }
+        forecast_response = requests.get(forecast_url, params=forecast_params, timeout=10)
+        forecast_response.raise_for_status() # Raise an HTTPError for bad responses (4xx or 5xx)
+        forecast = forecast_response.json()
+        # Display parsed data
+        display_weather(data, city_name=city_name)
+        display_forecast(forecast, city_name=city_name)
+        #forecast = get_forecast(lat, lon, weather_api)
+        st.write(forecast)
+        
 
     except requests.HTTPError as he:
         st.error(f"HTTP error: {he}")
