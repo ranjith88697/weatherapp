@@ -127,7 +127,7 @@ def display_weather(data: dict, city_name: str = ""):
 def get_forecast(lat, lon, weather_api):
     # Assuming the Google Weather API has a forecast endpoint.
     # This URL might need adjustment based on the actual API documentation.
-    forecast_url = "https://weather.googleapis.com/v1/forecast:lookup"  # Example forecast endpoint
+    forecast_url = "https://weather.googleapis.com/v1/forecast/days:lookup"  # Example forecast endpoint
     forecast_params = {
         "key": weather_api,
         "location.latitude": lat,
