@@ -173,6 +173,7 @@ if st.button("Get Weather"):
         # Display parsed data
         display_weather(data, city_name=city_name)
         forecast = get_forecast(lat, lon, weather_api)
+        st.write(forcast)
         if forecast.get("list"):
             st.subheader(f"📅 5-Day Forecast for {city_name}")
             # Assuming each entry in "list" is a forecast for a specific time
