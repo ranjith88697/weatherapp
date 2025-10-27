@@ -127,7 +127,7 @@ def display_weather(data: dict, city_name: str = ""):
 def display_forecast(forecast: dict, city_name: str = ""):
     """Parse and display weather data in a clean layout."""
     # top-level fields
-   if "forecastDays" in forecast:
+    if "forecastDays" in forecast:
             forecast_list = []
             for day in forecast["forecastDays"]:
                 date_str = f"{day['displayDate']['year']}-{day['displayDate']['month']:02d}-{day['displayDate']['day']:02d}"
@@ -178,7 +178,7 @@ def display_forecast(forecast: dict, city_name: str = ""):
                     st.write("💧", forecast["Humidity (Night)"], "% humidity")
                     st.write("🌡️", forecast["Min Temp (°C)"], "°C")
 
-        else:
+    else:
             st.warning("No forecast data available in the response.")
 
 # --- UI Inputs ---
