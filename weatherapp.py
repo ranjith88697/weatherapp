@@ -157,26 +157,8 @@ def display_forecast(forecast: dict, city_name: str = ""):
             df = pd.DataFrame(forecast_list)
 
             # --- Display nicely ---
-            st.subheader("🌤 3-Day Weather Forecast")
+            st.subheader("🌤 5-Day Weather Forecast")
             st.dataframe(df, use_container_width=True)
-
-            # --- Optional: Show icons ---
-            st.subheader("🌇 Daily Summary")
-            for day, forecast in zip(data["forecastDays"], forecast_list):
-                st.markdown(f"### 📅 {forecast['Date']}")
-                col1, col2 = st.columns(2)
-
-                with col1:
-                    st.image(day["daytimeForecast"]["weatherCondition"]["iconBaseUri"] + ".png", width=64)
-                    st.write("**Day:**", forecast["Condition (Day)"])
-                    st.write("💧", forecast["Humidity (Day)"], "% humidity")
-                    st.write("🌡️", forecast["Max Temp (°C)"], "°C")
-
-                with col2:
-                    st.image(day["nighttimeForecast"]["weatherCondition"]["iconBaseUri"] + ".png", width=64)
-                    st.write("**Night:**", forecast["Condition (Night)"])
-                    st.write("💧", forecast["Humidity (Night)"], "% humidity")
-                    st.write("🌡️", forecast["Min Temp (°C)"], "°C")
 
     else:
             st.warning("No forecast data available in the response.")
