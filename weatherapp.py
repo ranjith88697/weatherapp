@@ -169,11 +169,21 @@ if st.button("Get Weather"):
         weather_response = requests.get(weather_url, params=weather_params, timeout=10)
         weather_response.raise_for_status()
         data = weather_response.json()
-
+        # 3) Forcast weather for 5 days
+        forecast_url = "https://weather.googleapis.com/v1/forecast/days:lookup"  # Example forecast endpoint
+        forecast_params = {
+            "key": weather_api,
+            "location.latitude": lat,
+            "location.longitude": lon,
+            "days": 5 # Assuming a parameter for number of days
+        }
+        forecast_response = requests.get(forecast_url, params=forecast_params, timeout=10)
+        forecast_response.raise_for_status() # Raise an HTTPError for bad responses (4xx or 5xx)
+        forecast = forecast_response.json()
         # Display parsed data
         display_weather(data, city_name=city_name)
-        forecast = get_forecast(lat, lon, weather_api)
-        st.write(forcast)
+        #forecast = get_forecast(lat, lon, weather_api)
+        st.write(forecast)
         if forecast.get("list"):
             st.subheader(f"📅 5-Day Forecast for {city_name}")
             # Assuming each entry in "list" is a forecast for a specific time
