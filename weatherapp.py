@@ -29,7 +29,6 @@ def format_time(iso_ts: str, tz_id: str | None = None):
         return None
     try:
         dt = datetime.fromisoformat(iso_ts.replace("Z", "+00:00"))
-        # You might want to add timezone conversion here if tz_id is reliable
         return dt.strftime("%Y-%m-%d %H:%M:%S UTC")
     except Exception:
         return iso_ts
@@ -77,12 +76,13 @@ def display_weather(data: dict, city_name: str = ""):
 
     # Main row: icon + main metrics
     icon_col, main_col = st.columns([1, 4])
+    '''
     with icon_col:
         if icon_uri:
             try:
                 st.image(icon_uri, width=96)
             except Exception:
-                pass
+                pass '''
     with main_col:
         st.markdown(f"### {temp}° {temp_unit.capitalize()} — **{cond_text}**")
         st.write(f"Feels like: **{feels_like}° {temp_unit.capitalize()}**")
@@ -210,7 +210,7 @@ if st.button("Get Weather"):
         display_weather(data, city_name=city_name)
         display_forecast(forecast, city_name=city_name)
         #forecast = get_forecast(lat, lon, weather_api)
-        st.write(forecast)
+        #st.write(forecast) -- for debugging
         
 
     except requests.HTTPError as he:
