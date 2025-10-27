@@ -76,13 +76,6 @@ def display_weather(data: dict, city_name: str = ""):
 
     # Main row: icon + main metrics
     icon_col, main_col = st.columns([1, 4])
-    '''
-    with icon_col:
-        if icon_uri:
-            try:
-                st.image(icon_uri, width=96)
-            except Exception:
-                pass '''
     with main_col:
         st.markdown(f"### {temp}° {temp_unit.capitalize()} — **{cond_text}**")
         st.write(f"Feels like: **{feels_like}° {temp_unit.capitalize()}**")
